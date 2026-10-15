@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { seoData, useSeo } from '@/composables/useSeo'
 import { tools } from '@/tools'
 
 const { commitDraft } = useAudioSource()
+const { setPageSeo } = useSeo()
 import ChannelsView from '@/views/ChannelsView.vue'
 import CompressView from '@/views/CompressView.vue'
 import ConvertView from '@/views/ConvertView.vue'
@@ -56,7 +58,15 @@ router.beforeEach(async (to, from) => {
 })
 
 router.afterEach((to) => {
-  document.title = `${to.meta.title || 'Audio tools'} by sessea`
+  const routeName = to.name || 'convert'
+  const seo = seoData[routeName]
+  if (seo) {
+    setPageSeo({
+      title: seo.title,
+      description: seo.description,
+      path: to.path,
+    })
+  }
 })
 
 export default router

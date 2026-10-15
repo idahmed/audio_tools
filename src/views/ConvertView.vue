@@ -63,6 +63,12 @@ const seoPoints = [
   'WebM/OGG/M4A appear when your browser supports MediaRecorder for them.',
 ]
 
+const seoFaq = [
+  { q: 'Is this audio converter free?', a: 'Yes, completely free with no limits on file size or conversions.' },
+  { q: 'Are my files uploaded to a server?', a: 'No. All processing happens locally in your browser for complete privacy.' },
+  { q: 'What formats can I convert to?', a: 'MP3, WAV, and depending on browser support: WebM, OGG, and M4A.' },
+]
+
 let timer
 
 watch([format, bitrate], ([nextFormat, nextBitrate]) => {
@@ -210,6 +216,6 @@ async function downloadAll() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Convert audio online" :points="seoPoints" />
+    <SeoBlurb title="Convert audio online" :points="seoPoints" :faq="seoFaq" />
   </section>
 </template>
