@@ -60,6 +60,12 @@ const seoPoints = [
   'Ideal for podcasts, voice notes, and short clips.',
 ]
 
+const seoFaq = [
+  { q: 'Can I cut multiple sections?', a: 'Currently one section per export. Use the tool multiple times for multiple cuts.' },
+  { q: 'What does normalize do?', a: 'Normalize adjusts volume so the loudest part reaches maximum level, making quiet audio louder.' },
+  { q: 'What format is the output?', a: 'Trimmed audio exports as MP3 at 192kbps for good quality and small size.' },
+]
+
 watch(source, (value) => {
   if (!value) {
     revokeResult()
@@ -202,6 +208,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Trim audio online" :points="seoPoints" />
+    <SeoBlurb title="Trim audio online" :points="seoPoints" :faq="seoFaq" />
   </section>
 </template>

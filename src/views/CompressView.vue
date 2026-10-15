@@ -56,6 +56,12 @@ const seoPoints = [
   'Compression runs locally for privacy and speed.',
 ]
 
+const seoFaq = [
+  { q: 'How much can I compress audio?', a: 'You can reduce bitrate from 320kbps down to 64kbps, or set a target file size.' },
+  { q: 'Will compression reduce quality?', a: 'Lower bitrates reduce quality. 128kbps is good for speech, 192-256kbps for music.' },
+  { q: 'Is there a file size limit?', a: 'No server limits since processing happens in your browser. Large files may take longer.' },
+]
+
 let timer
 
 watch([mode, bitrate, targetKb], ([nextMode, nextBitrate, nextTarget]) => {
@@ -192,6 +198,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Compress audio online" :points="seoPoints" />
+    <SeoBlurb title="Compress audio online" :points="seoPoints" :faq="seoFaq" />
   </section>
 </template>
