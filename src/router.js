@@ -7,11 +7,14 @@ import ChannelsView from '@/views/ChannelsView.vue'
 import CompressView from '@/views/CompressView.vue'
 import ConvertView from '@/views/ConvertView.vue'
 import FadeView from '@/views/FadeView.vue'
+import HelpView from '@/views/HelpView.vue'
 import LoopView from '@/views/LoopView.vue'
 import MergeView from '@/views/MergeView.vue'
+import PrivacyView from '@/views/PrivacyView.vue'
 import ReverseView from '@/views/ReverseView.vue'
 import SpeedView from '@/views/SpeedView.vue'
 import SplitView from '@/views/SplitView.vue'
+import TermsView from '@/views/TermsView.vue'
 import TrimView from '@/views/TrimView.vue'
 import VolumeView from '@/views/VolumeView.vue'
 
@@ -39,6 +42,9 @@ const router = createRouter({
       component: views[tool.name],
       meta: { title: tool.title, label: tool.label },
     })),
+    { path: '/help', name: 'help', component: HelpView, meta: { title: 'How to Use' } },
+    { path: '/terms', name: 'terms', component: TermsView, meta: { title: 'Terms of Service' } },
+    { path: '/privacy', name: 'privacy', component: PrivacyView, meta: { title: 'Privacy Policy' } },
   ],
   scrollBehavior() {
     return { top: 0 }

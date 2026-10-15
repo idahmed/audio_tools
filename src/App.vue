@@ -104,6 +104,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         </p>
 
         <RouterView />
+
+        <footer class="footer">
+          <RouterLink to="/help">How to Use</RouterLink>
+          <RouterLink to="/terms">Terms</RouterLink>
+          <RouterLink to="/privacy">Privacy</RouterLink>
+        </footer>
       </main>
 
       <div class="ad ad-banner" aria-label="Advertisement">
