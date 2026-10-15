@@ -27,7 +27,6 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
   select,
   removeCurrent,
   clear,
@@ -192,7 +191,6 @@ async function downloadAll() {
           :busy="exporting"
           :ready="!!source"
           @download="download"
-          @replace="replaceFile"
           @clear="clear"
         />
 

@@ -21,7 +21,10 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
+  setDraft,
+  clearDraft,
+  canUndo,
+  undo,
   select,
   removeCurrent,
   clear,
@@ -36,6 +39,9 @@ const partASize = ref(0)
 const partBSize = ref(0)
 const partADur = ref(0)
 const partBDur = ref(0)
+
+let alive = true
+let timer
 
 const originalMeta = computed(() => {
   if (!source.value) return ''
@@ -58,8 +64,6 @@ const seoPoints = [
   'Everything stays on your device.',
 ]
 
-let timer
-
 watch(source, (value) => {
   revokeParts()
   if (!value) return
@@ -73,6 +77,7 @@ watch([source, cut], () => {
 })
 
 onUnmounted(() => {
+  alive = false
   clearTimeout(timer)
   revokeParts()
 })
@@ -86,6 +91,7 @@ function revokeParts() {
   partBSize.value = 0
   partADur.value = 0
   partBDur.value = 0
+  clearDraft()
 }
 
 async function updatePreview() {
@@ -95,6 +101,7 @@ async function updatePreview() {
     const [a, b] = splitBuffer(source.value.buffer, cut.value)
     const blobA = encodeMp3(a, 192)
     const blobB = encodeMp3(b, 192)
+    if (!alive) return
     if (partAUrl.value) URL.revokeObjectURL(partAUrl.value)
     if (partBUrl.value) URL.revokeObjectURL(partBUrl.value)
     partAUrl.value = URL.createObjectURL(blobA)
@@ -103,8 +110,11 @@ async function updatePreview() {
     partBSize.value = blobB.size
     partADur.value = a.duration
     partBDur.value = b.duration
+    setDraft(a, `${source.value.name}-a`)
     status.value = ''
   } catch {
+    if (!alive) return
+    revokeParts()
     status.value = 'Could not split audio.'
   }
 }
@@ -187,15 +197,9 @@ async function downloadBoth() {
           <button type="button" class="btn" :disabled="exporting" @click="downloadBoth">
             {{ exporting ? 'Working…' : 'ZIP both' }}
           </button>
-          <label class="btn file-btn">
-            Replace
-            <input
-              type="file"
-              accept="audio/*"
-              hidden
-              @change="replaceFile($event.target.files?.[0]); $event.target.value = ''"
-            >
-          </label>
+          <button type="button" class="btn" :disabled="exporting || !canUndo" @click="undo">
+            Undo
+          </button>
           <button type="button" class="btn" @click="clear">New</button>
         </div>
 

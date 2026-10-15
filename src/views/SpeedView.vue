@@ -21,7 +21,8 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
+  setDraft,
+  clearDraft,
   select,
   removeCurrent,
   clear,
@@ -33,6 +34,9 @@ const status = ref('')
 const resultUrl = ref('')
 const resultSize = ref(0)
 const resultDuration = ref(0)
+
+let alive = true
+let timer
 
 const originalMeta = computed(() => {
   if (!source.value) return ''
@@ -50,8 +54,6 @@ const seoPoints = [
   'Export the result as MP3 when it sounds right.',
 ]
 
-let timer
-
 watch([source, rate], () => {
   clearTimeout(timer)
   if (!source.value) {
@@ -62,6 +64,7 @@ watch([source, rate], () => {
 })
 
 onUnmounted(() => {
+  alive = false
   clearTimeout(timer)
   revokeResult()
 })
@@ -71,6 +74,7 @@ function revokeResult() {
   resultUrl.value = ''
   resultSize.value = 0
   resultDuration.value = 0
+  clearDraft()
 }
 
 async function updatePreview() {
@@ -79,12 +83,16 @@ async function updatePreview() {
   try {
     const buffer = changeSpeed(source.value.buffer, rate.value)
     const blob = encodeMp3(buffer, 192)
+    if (!alive) return
     if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
     resultUrl.value = URL.createObjectURL(blob)
     resultSize.value = blob.size
     resultDuration.value = buffer.duration
+    setDraft(buffer, source.value.name)
     status.value = ''
   } catch {
+    if (!alive) return
+    revokeResult()
     status.value = 'Could not change speed.'
   }
 }
@@ -149,7 +157,6 @@ async function download() {
           :busy="exporting"
           :ready="!!source"
           @download="download"
-          @replace="replaceFile"
           @clear="clear"
         />
         <CrossToolLinks />

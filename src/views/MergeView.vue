@@ -19,7 +19,8 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
+  setDraft,
+  clearDraft,
   move,
   removeCurrent,
   select,
@@ -31,6 +32,9 @@ const status = ref('')
 const resultUrl = ref('')
 const resultSize = ref(0)
 const resultDuration = ref(0)
+
+let alive = true
+let timer
 
 const canExport = computed(() => items.value.length >= 2)
 
@@ -52,8 +56,6 @@ const seoPoints = [
   'Useful for voice notes, podcasts, and short edits.',
 ]
 
-let timer
-
 watch(items, () => {
   clearTimeout(timer)
   if (!canExport.value) {
@@ -65,6 +67,7 @@ watch(items, () => {
 }, { deep: true })
 
 onUnmounted(() => {
+  alive = false
   clearTimeout(timer)
   revokeResult()
 })
@@ -74,6 +77,7 @@ function revokeResult() {
   resultUrl.value = ''
   resultSize.value = 0
   resultDuration.value = 0
+  clearDraft()
 }
 
 async function updatePreview() {
@@ -82,12 +86,16 @@ async function updatePreview() {
   try {
     const buffer = mergeBuffers(items.value.map((item) => item.buffer))
     const blob = encodeMp3(buffer, 192)
+    if (!alive) return
     if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
     resultUrl.value = URL.createObjectURL(blob)
     resultSize.value = blob.size
     resultDuration.value = buffer.duration
+    setDraft(buffer, 'merged', { replaceAll: true })
     status.value = ''
   } catch {
+    if (!alive) return
+    revokeResult()
     status.value = 'Could not merge audio.'
   }
 }
@@ -173,7 +181,6 @@ function removeAt(index) {
           :busy="exporting"
           :ready="canExport"
           @download="download"
-          @replace="replaceFile"
           @clear="clear"
         />
         <CrossToolLinks />

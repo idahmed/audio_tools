@@ -21,7 +21,8 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
+  setDraft,
+  clearDraft,
   select,
   removeCurrent,
   clear,
@@ -31,6 +32,9 @@ const exporting = ref(false)
 const status = ref('')
 const resultUrl = ref('')
 const resultSize = ref(0)
+
+let alive = true
+let timer
 
 const originalMeta = computed(() => {
   if (!source.value) return ''
@@ -48,8 +52,6 @@ const seoPoints = [
   'Export the reversed track as MP3.',
 ]
 
-let timer
-
 watch(source, () => {
   clearTimeout(timer)
   if (!source.value) {
@@ -60,6 +62,7 @@ watch(source, () => {
 })
 
 onUnmounted(() => {
+  alive = false
   clearTimeout(timer)
   revokeResult()
 })
@@ -68,6 +71,7 @@ function revokeResult() {
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
   resultUrl.value = ''
   resultSize.value = 0
+  clearDraft()
 }
 
 async function updatePreview() {
@@ -76,11 +80,15 @@ async function updatePreview() {
   try {
     const buffer = reverseBuffer(source.value.buffer)
     const blob = encodeMp3(buffer, 192)
+    if (!alive) return
     if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
     resultUrl.value = URL.createObjectURL(blob)
     resultSize.value = blob.size
+    setDraft(buffer, source.value.name)
     status.value = ''
   } catch {
+    if (!alive) return
+    revokeResult()
     status.value = 'Could not reverse audio.'
   }
 }
@@ -125,7 +133,6 @@ async function download() {
           :busy="exporting"
           :ready="!!source"
           @download="download"
-          @replace="replaceFile"
           @clear="clear"
         />
         <CrossToolLinks />

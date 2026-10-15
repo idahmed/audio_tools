@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAudioSource } from '@/composables/useAudioSource'
 import { tools } from '@/tools'
+
+const { commitDraft } = useAudioSource()
 import ChannelsView from '@/views/ChannelsView.vue'
 import CompressView from '@/views/CompressView.vue'
 import ConvertView from '@/views/ConvertView.vue'
@@ -40,6 +43,10 @@ const router = createRouter({
   scrollBehavior() {
     return { top: 0 }
   },
+})
+
+router.beforeEach(async (to, from) => {
+  if (to.path !== from.path) commitDraft()
 })
 
 router.afterEach((to) => {

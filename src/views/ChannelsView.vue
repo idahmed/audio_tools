@@ -21,7 +21,8 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
+  setDraft,
+  clearDraft,
   select,
   removeCurrent,
   clear,
@@ -33,6 +34,9 @@ const status = ref('')
 const resultUrl = ref('')
 const resultSize = ref(0)
 const resultChannels = ref(1)
+
+let alive = true
+let timer
 
 const originalMeta = computed(() => {
   if (!source.value) return ''
@@ -50,8 +54,6 @@ const seoPoints = [
   'Runs locally — nothing is uploaded.',
 ]
 
-let timer
-
 watch([source, mode], () => {
   clearTimeout(timer)
   if (!source.value) {
@@ -62,6 +64,7 @@ watch([source, mode], () => {
 })
 
 onUnmounted(() => {
+  alive = false
   clearTimeout(timer)
   revokeResult()
 })
@@ -70,6 +73,7 @@ function revokeResult() {
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
   resultUrl.value = ''
   resultSize.value = 0
+  clearDraft()
 }
 
 async function updatePreview() {
@@ -78,12 +82,16 @@ async function updatePreview() {
   try {
     const buffer = setChannels(source.value.buffer, mode.value)
     const blob = encodeMp3(buffer, 192)
+    if (!alive) return
     if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
     resultUrl.value = URL.createObjectURL(blob)
     resultSize.value = blob.size
     resultChannels.value = buffer.numberOfChannels
+    setDraft(buffer, source.value.name)
     status.value = ''
   } catch {
+    if (!alive) return
+    revokeResult()
     status.value = 'Could not change channels.'
   }
 }
@@ -147,7 +155,6 @@ async function download() {
           :busy="exporting"
           :ready="!!source"
           @download="download"
-          @replace="replaceFile"
           @clear="clear"
         />
         <CrossToolLinks />

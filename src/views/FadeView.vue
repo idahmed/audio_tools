@@ -21,7 +21,8 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
+  setDraft,
+  clearDraft,
   select,
   removeCurrent,
   clear,
@@ -33,6 +34,9 @@ const exporting = ref(false)
 const status = ref('')
 const resultUrl = ref('')
 const resultSize = ref(0)
+
+let alive = true
+let timer
 
 const maxFade = computed(() => {
   if (!source.value) return 5
@@ -55,8 +59,6 @@ const seoPoints = [
   'Export as MP3 when the fades sound right.',
 ]
 
-let timer
-
 watch(source, () => {
   fadeIn.value = Math.min(0.5, maxFade.value)
   fadeOut.value = Math.min(0.5, maxFade.value)
@@ -72,6 +74,7 @@ watch([source, fadeIn, fadeOut], () => {
 })
 
 onUnmounted(() => {
+  alive = false
   clearTimeout(timer)
   revokeResult()
 })
@@ -80,6 +83,7 @@ function revokeResult() {
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
   resultUrl.value = ''
   resultSize.value = 0
+  clearDraft()
 }
 
 async function updatePreview() {
@@ -88,11 +92,15 @@ async function updatePreview() {
   try {
     const buffer = fadeBuffer(source.value.buffer, fadeIn.value, fadeOut.value)
     const blob = encodeMp3(buffer, 192)
+    if (!alive) return
     if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
     resultUrl.value = URL.createObjectURL(blob)
     resultSize.value = blob.size
+    setDraft(buffer, source.value.name)
     status.value = ''
   } catch {
+    if (!alive) return
+    revokeResult()
     status.value = 'Could not apply fade.'
   }
 }
@@ -148,7 +156,6 @@ async function download() {
           :busy="exporting"
           :ready="!!source"
           @download="download"
-          @replace="replaceFile"
           @clear="clear"
         />
         <CrossToolLinks />

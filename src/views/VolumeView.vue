@@ -22,7 +22,8 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
+  setDraft,
+  clearDraft,
   select,
   removeCurrent,
   clear,
@@ -34,6 +35,9 @@ const exporting = ref(false)
 const status = ref('')
 const resultUrl = ref('')
 const resultSize = ref(0)
+
+let alive = true
+let timer
 
 const originalMeta = computed(() => {
   if (!source.value) return ''
@@ -51,8 +55,6 @@ const seoPoints = [
   'Export as MP3 when the level sounds right.',
 ]
 
-let timer
-
 watch([source, mode, percent], () => {
   clearTimeout(timer)
   if (!source.value) {
@@ -63,6 +65,7 @@ watch([source, mode, percent], () => {
 })
 
 onUnmounted(() => {
+  alive = false
   clearTimeout(timer)
   revokeResult()
 })
@@ -71,6 +74,7 @@ function revokeResult() {
   if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
   resultUrl.value = ''
   resultSize.value = 0
+  clearDraft()
 }
 
 function buildBuffer() {
@@ -82,12 +86,17 @@ async function updatePreview() {
   if (!source.value) return
   status.value = 'Working…'
   try {
-    const blob = encodeMp3(buildBuffer(), 192)
+    const buffer = buildBuffer()
+    const blob = encodeMp3(buffer, 192)
+    if (!alive) return
     if (resultUrl.value) URL.revokeObjectURL(resultUrl.value)
     resultUrl.value = URL.createObjectURL(blob)
     resultSize.value = blob.size
+    setDraft(buffer, source.value.name)
     status.value = ''
   } catch {
+    if (!alive) return
+    revokeResult()
     status.value = 'Could not adjust volume.'
   }
 }
@@ -156,7 +165,6 @@ async function download() {
           :busy="exporting"
           :ready="!!source"
           @download="download"
-          @replace="replaceFile"
           @clear="clear"
         />
         <CrossToolLinks />

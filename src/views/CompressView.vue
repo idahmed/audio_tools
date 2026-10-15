@@ -23,7 +23,6 @@ const {
   source,
   error,
   addFiles,
-  replaceFile,
   select,
   removeCurrent,
   clear,
@@ -185,7 +184,6 @@ async function download() {
           :busy="exporting"
           :ready="!!source"
           @download="download"
-          @replace="replaceFile"
           @clear="clear"
         />
         <CrossToolLinks />

@@ -1,10 +1,14 @@
 <script setup>
+import { useAudioSource } from '@/composables/useAudioSource'
+
 defineProps({
   busy: { type: Boolean, default: false },
   ready: { type: Boolean, default: true },
 })
 
-defineEmits(['download', 'replace', 'clear'])
+defineEmits(['download', 'clear'])
+
+const { canUndo, undo } = useAudioSource()
 </script>
 
 <template>
@@ -17,15 +21,9 @@ defineEmits(['download', 'replace', 'clear'])
     >
       {{ busy ? 'Working…' : 'Download' }}
     </button>
-    <label class="btn file-btn">
-      Replace
-      <input
-        type="file"
-        accept="audio/*"
-        hidden
-        @change="$emit('replace', $event.target.files?.[0]); $event.target.value = ''"
-      >
-    </label>
+    <button type="button" class="btn" :disabled="busy || !canUndo" @click="undo">
+      Undo
+    </button>
     <button type="button" class="btn" @click="$emit('clear')">New</button>
   </div>
 </template>
