@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import HubLinks from '@/components/HubLinks.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
 import { loadTheme, saveTheme } from '@/lib/prefs'
 import { tools } from '@/tools'
@@ -74,7 +75,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
             </svg>
           </button>
           <h1>{{ route.meta.title || 'Audio tools' }}</h1>
-          <p>by sessea</p>
+          <HubLinks />
         </header>
 
         <nav class="tabs" aria-label="Tools">
@@ -92,7 +93,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         </nav>
 
         <p class="tips">
-          Shortcuts: 1–6 tools · O Open · Esc Clear
+          Shortcuts: 1–9 · 0 Channels · L Loop · O Open · Esc Clear
         </p>
 
         <RouterView />

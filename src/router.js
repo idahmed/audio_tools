@@ -1,9 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { tools } from '@/tools'
+import ChannelsView from '@/views/ChannelsView.vue'
 import CompressView from '@/views/CompressView.vue'
 import ConvertView from '@/views/ConvertView.vue'
+import FadeView from '@/views/FadeView.vue'
+import LoopView from '@/views/LoopView.vue'
 import MergeView from '@/views/MergeView.vue'
+import ReverseView from '@/views/ReverseView.vue'
 import SpeedView from '@/views/SpeedView.vue'
+import SplitView from '@/views/SplitView.vue'
 import TrimView from '@/views/TrimView.vue'
 import VolumeView from '@/views/VolumeView.vue'
 
@@ -14,6 +19,11 @@ const views = {
   volume: VolumeView,
   merge: MergeView,
   speed: SpeedView,
+  fade: FadeView,
+  reverse: ReverseView,
+  split: SplitView,
+  channels: ChannelsView,
+  loop: LoopView,
 }
 
 const router = createRouter({

@@ -133,6 +133,30 @@ export function changeVolume(buffer, percent) {
   return out
 }
 
+export function reverseBuffer(buffer) {
+  const out = cloneBuffer(buffer)
+  for (let c = 0; c < out.numberOfChannels; c += 1) {
+    out.getChannelData(c).reverse()
+  }
+  return out
+}
+
+export function fadeBuffer(buffer, fadeInSec = 0, fadeOutSec = 0) {
+  const out = cloneBuffer(buffer)
+  const fadeIn = Math.max(0, Math.min(out.length, Math.floor(fadeInSec * out.sampleRate)))
+  const fadeOut = Math.max(0, Math.min(out.length, Math.floor(fadeOutSec * out.sampleRate)))
+
+  for (let c = 0; c < out.numberOfChannels; c += 1) {
+    const data = out.getChannelData(c)
+    for (let i = 0; i < fadeIn; i += 1) data[i] *= i / fadeIn
+    for (let i = 0; i < fadeOut; i += 1) {
+      const idx = data.length - fadeOut + i
+      data[idx] *= 1 - (i + 1) / fadeOut
+    }
+  }
+  return out
+}
+
 export function changeSpeed(buffer, rate) {
   const safe = Math.max(0.25, Math.min(4, rate || 1))
   const length = Math.max(1, Math.floor(buffer.length / safe))
@@ -163,6 +187,33 @@ function matchChannels(buffer, channels) {
     out.copyToChannel(src.slice(0), c)
   }
   return out
+}
+
+export function setChannels(buffer, mode) {
+  if (mode === 'mono') {
+    if (buffer.numberOfChannels === 1) return cloneBuffer(buffer)
+    const out = ctx().createBuffer(1, buffer.length, buffer.sampleRate)
+    const dest = out.getChannelData(0)
+    const count = buffer.numberOfChannels
+    for (let i = 0; i < buffer.length; i += 1) {
+      let sum = 0
+      for (let c = 0; c < count; c += 1) sum += buffer.getChannelData(c)[i]
+      dest[i] = sum / count
+    }
+    return out
+  }
+  return matchChannels(buffer, 2)
+}
+
+export function loopBuffer(buffer, times) {
+  const n = Math.max(1, Math.min(12, Math.floor(times || 1)))
+  if (n === 1) return cloneBuffer(buffer)
+  return mergeBuffers(Array.from({ length: n }, () => buffer))
+}
+
+export function splitBuffer(buffer, atSec) {
+  const at = Math.max(0.05, Math.min(buffer.duration - 0.05, atSec || 0))
+  return [trimBuffer(buffer, 0, at), trimBuffer(buffer, at, buffer.duration)]
 }
 
 function resampleBuffer(buffer, sampleRate) {

@@ -15,6 +15,7 @@ import {
   formatBytes,
   formatTime,
 } from '@/lib/audio'
+import { loadPrefs, savePrefs } from '@/lib/prefs'
 
 const {
   items,
@@ -28,9 +29,10 @@ const {
   clear,
 } = useAudioSource()
 
-const mode = ref('bitrate')
-const bitrate = ref(128)
-const targetKb = ref(1000)
+const prefs = loadPrefs()
+const mode = ref(prefs.compressMode === 'target' ? 'target' : 'bitrate')
+const bitrate = ref(BITRATES.includes(prefs.compressBitrate) ? prefs.compressBitrate : 128)
+const targetKb = ref(prefs.compressTargetKb || 1000)
 const exporting = ref(false)
 const status = ref('')
 const resultUrl = ref('')
@@ -56,6 +58,14 @@ const seoPoints = [
 ]
 
 let timer
+
+watch([mode, bitrate, targetKb], ([nextMode, nextBitrate, nextTarget]) => {
+  savePrefs({
+    compressMode: nextMode,
+    compressBitrate: nextBitrate,
+    compressTargetKb: nextTarget,
+  })
+})
 
 watch([source, mode, bitrate, targetKb], () => {
   clearTimeout(timer)

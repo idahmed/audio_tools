@@ -15,8 +15,11 @@ import {
   formatBytes,
   formatTime,
 } from '@/lib/audio'
+import { downloadZip } from '@/lib/batch'
+import { loadPrefs, savePrefs } from '@/lib/prefs'
 
 const formats = availableFormats()
+const prefs = loadPrefs()
 
 const {
   items,
@@ -30,8 +33,10 @@ const {
   clear,
 } = useAudioSource()
 
-const format = ref('audio/mpeg')
-const bitrate = ref(128)
+const format = ref(
+  formats.some((item) => item.id === prefs.format) ? prefs.format : 'audio/mpeg',
+)
+const bitrate = ref(prefs.bitrate || 128)
 const exporting = ref(false)
 const status = ref('')
 const resultUrl = ref('')
@@ -51,6 +56,7 @@ const showBitrate = computed(() => format.value === 'audio/mpeg')
 const livePreview = computed(
   () => format.value === 'audio/mpeg' || format.value === 'audio/wav',
 )
+const count = computed(() => items.value.length)
 
 const seoPoints = [
   'Convert audio to MP3, WAV, WebM, OGG, or M4A in your browser.',
@@ -59,6 +65,10 @@ const seoPoints = [
 ]
 
 let timer
+
+watch([format, bitrate], ([nextFormat, nextBitrate]) => {
+  savePrefs({ format: nextFormat, bitrate: nextBitrate })
+})
 
 watch([source, format, bitrate], () => {
   clearTimeout(timer)
@@ -116,6 +126,29 @@ async function download() {
     exporting.value = false
   }
 }
+
+async function downloadAll() {
+  if (!items.value.length) return
+  if (!livePreview.value) {
+    status.value = 'Batch ZIP works with MP3 or WAV.'
+    return
+  }
+  exporting.value = true
+  status.value = 'Preparing zip…'
+  try {
+    const files = []
+    for (const item of items.value) {
+      const blob = await exportAudio(item.buffer, format.value, bitrate.value)
+      files.push({ name: `${item.name}.${extFor(format.value)}`, blob })
+    }
+    await downloadZip(files, 'converted-audio.zip')
+    status.value = `Zip ready · ${files.length} files`
+  } catch {
+    status.value = 'Could not create zip.'
+  } finally {
+    exporting.value = false
+  }
+}
 </script>
 
 <template>
@@ -162,6 +195,17 @@ async function download() {
           @replace="replaceFile"
           @clear="clear"
         />
+
+        <button
+          v-if="count > 1"
+          type="button"
+          class="btn"
+          :disabled="exporting"
+          @click="downloadAll"
+        >
+          Download all as ZIP
+        </button>
+
         <CrossToolLinks />
         <p v-if="status" class="status">{{ status }}</p>
       </div>
