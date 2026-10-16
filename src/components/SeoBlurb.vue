@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, watch } from 'vue'
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -25,19 +25,22 @@ const faqSchema = computed(() => {
 
 let scriptEl = null
 
-onMounted(() => {
-  if (faqSchema.value) {
-    scriptEl = document.createElement('script')
-    scriptEl.type = 'application/ld+json'
-    scriptEl.textContent = JSON.stringify(faqSchema.value)
-    document.head.appendChild(scriptEl)
-  }
-})
-
-onUnmounted(() => {
+function syncSchema() {
   if (scriptEl) {
-    document.head.removeChild(scriptEl)
+    scriptEl.remove()
+    scriptEl = null
   }
+  if (!faqSchema.value) return
+  scriptEl = document.createElement('script')
+  scriptEl.type = 'application/ld+json'
+  scriptEl.textContent = JSON.stringify(faqSchema.value)
+  document.head.appendChild(scriptEl)
+}
+
+onMounted(syncSchema)
+watch(faqSchema, syncSchema)
+onUnmounted(() => {
+  if (scriptEl) scriptEl.remove()
 })
 </script>
 

@@ -7,6 +7,7 @@ import QueueBar from '@/components/QueueBar.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import SeoBlurb from '@/components/SeoBlurb.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { getTool } from '@/tools'
 import {
   downloadBlob,
   encodeMp3,
@@ -53,6 +54,9 @@ const seoPoints = [
   'Handy for samples, ringtones, and short loops.',
   'Processing stays in your browser.',
 ]
+
+const seoFaq = getTool('loop')?.faq ?? []
+
 
 watch([source, times], () => {
   clearTimeout(timer)
@@ -162,6 +166,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Loop audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" title="Loop audio online" :points="seoPoints" />
   </section>
 </template>

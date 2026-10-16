@@ -7,6 +7,7 @@ import QueueBar from '@/components/QueueBar.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import SeoBlurb from '@/components/SeoBlurb.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { getTool } from '@/tools'
 import {
   changeSpeed,
   downloadBlob,
@@ -53,6 +54,9 @@ const seoPoints = [
   'Pitch follows speed — a simple, lightweight approach.',
   'Export the result as MP3 when it sounds right.',
 ]
+
+const seoFaq = getTool('speed')?.faq ?? []
+
 
 watch([source, rate], () => {
   clearTimeout(timer)
@@ -165,6 +169,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Change audio speed online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" title="Change audio speed online" :points="seoPoints" />
   </section>
 </template>

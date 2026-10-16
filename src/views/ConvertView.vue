@@ -17,6 +17,7 @@ import {
 } from '@/lib/audio'
 import { downloadZip } from '@/lib/batch'
 import { loadPrefs, savePrefs } from '@/lib/prefs'
+import { getTool } from '@/tools'
 
 const formats = availableFormats()
 const prefs = loadPrefs()
@@ -63,11 +64,9 @@ const seoPoints = [
   'WebM/OGG/M4A appear when your browser supports MediaRecorder for them.',
 ]
 
-const seoFaq = [
-  { q: 'Is this audio converter free?', a: 'Yes, completely free with no limits on file size or conversions.' },
-  { q: 'Are my files uploaded to a server?', a: 'No. All processing happens locally in your browser for complete privacy.' },
-  { q: 'What formats can I convert to?', a: 'MP3, WAV, and depending on browser support: WebM, OGG, and M4A.' },
-]
+const seoFaq = getTool('convert')?.faq ?? []
+
+
 
 let timer
 

@@ -7,6 +7,7 @@ import QueueBar from '@/components/QueueBar.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import SeoBlurb from '@/components/SeoBlurb.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { getTool } from '@/tools'
 import {
   downloadBlob,
   encodeMp3,
@@ -58,6 +59,9 @@ const seoPoints = [
   'Useful for podcasts, voice notes, and short clips.',
   'Export as MP3 when the fades sound right.',
 ]
+
+const seoFaq = getTool('fade')?.faq ?? []
+
 
 watch(source, () => {
   fadeIn.value = Math.min(0.5, maxFade.value)
@@ -164,6 +168,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Fade audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" title="Fade audio online" :points="seoPoints" />
   </section>
 </template>

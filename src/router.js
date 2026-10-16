@@ -1,24 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAudioSource } from '@/composables/useAudioSource'
-import { seoData, useSeo } from '@/composables/useSeo'
+import { useSeo } from '@/composables/useSeo'
 import { tools } from '@/tools'
-
-const { commitDraft } = useAudioSource()
-const { setPageSeo } = useSeo()
 import ChannelsView from '@/views/ChannelsView.vue'
 import CompressView from '@/views/CompressView.vue'
 import ConvertView from '@/views/ConvertView.vue'
 import FadeView from '@/views/FadeView.vue'
-import HelpView from '@/views/HelpView.vue'
 import LoopView from '@/views/LoopView.vue'
 import MergeView from '@/views/MergeView.vue'
-import PrivacyView from '@/views/PrivacyView.vue'
 import ReverseView from '@/views/ReverseView.vue'
 import SpeedView from '@/views/SpeedView.vue'
 import SplitView from '@/views/SplitView.vue'
-import TermsView from '@/views/TermsView.vue'
 import TrimView from '@/views/TrimView.vue'
 import VolumeView from '@/views/VolumeView.vue'
+
+const { commitDraft } = useAudioSource()
+const { setPageSeo } = useSeo()
 
 const views = {
   convert: ConvertView,
@@ -42,11 +39,16 @@ const router = createRouter({
       path: tool.path,
       name: tool.name,
       component: views[tool.name],
-      meta: { title: tool.title, label: tool.label },
+      meta: {
+        title: tool.title,
+        description: tool.description,
+        heading: tool.heading,
+        label: tool.label,
+      },
     })),
-    { path: '/help', name: 'help', component: HelpView, meta: { title: 'How to Use' } },
-    { path: '/terms', name: 'terms', component: TermsView, meta: { title: 'Terms of Service' } },
-    { path: '/privacy', name: 'privacy', component: PrivacyView, meta: { title: 'Privacy Policy' } },
+    { path: '/help', redirect: '/convert' },
+    { path: '/terms', redirect: '/convert' },
+    { path: '/privacy', redirect: '/convert' },
   ],
   scrollBehavior() {
     return { top: 0 }
@@ -58,15 +60,13 @@ router.beforeEach(async (to, from) => {
 })
 
 router.afterEach((to) => {
-  const routeName = to.name || 'convert'
-  const seo = seoData[routeName]
-  if (seo) {
-    setPageSeo({
-      title: seo.title,
-      description: seo.description,
-      path: to.path,
-    })
-  }
+  setPageSeo({
+    title: to.meta.title || 'Free Online Audio Tools',
+    description:
+      to.meta.description ||
+      'Free browser-based audio tools. Convert, compress, trim, merge, and edit audio locally. No uploads required.',
+    path: to.path,
+  })
 })
 
 export default router

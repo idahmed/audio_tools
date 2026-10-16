@@ -7,6 +7,7 @@ import QueueBar from '@/components/QueueBar.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import SeoBlurb from '@/components/SeoBlurb.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { getTool } from '@/tools'
 import {
   changeVolume,
   downloadBlob,
@@ -54,6 +55,9 @@ const seoPoints = [
   'Nothing is uploaded — processing stays in your browser.',
   'Export as MP3 when the level sounds right.',
 ]
+
+const seoFaq = getTool('volume')?.faq ?? []
+
 
 watch([source, mode, percent], () => {
   clearTimeout(timer)
@@ -173,6 +177,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Normalize audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" title="Normalize audio online" :points="seoPoints" />
   </section>
 </template>

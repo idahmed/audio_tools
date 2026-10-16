@@ -2,6 +2,8 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import HubLinks from '@/components/HubLinks.vue'
+import InfoContent from '@/components/InfoContent.vue'
+import InfoModal from '@/components/InfoModal.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
 import { loadTheme, saveTheme } from '@/lib/prefs'
 import { tools } from '@/tools'
@@ -12,6 +14,13 @@ const { clear, addFiles, undo, canUndo } = useAudioSource()
 const theme = ref(loadTheme())
 const isDark = computed(() => theme.value === 'dark')
 const activePath = computed(() => route.path)
+const info = ref(null)
+
+const infoTitles = {
+  docs: 'How to Use',
+  terms: 'Terms of Service',
+  privacy: 'Privacy Policy',
+}
 
 watch(theme, (value) => {
   saveTheme(value)
@@ -24,9 +33,29 @@ function toggleTheme() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
 }
 
+function openInfo(kind) {
+  info.value = kind
+}
+
+function closeInfo() {
+  info.value = null
+}
+
 function onKeydown(event) {
   const tag = document.activeElement?.tagName
   if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return
+
+  if (event.key === 'Escape') {
+    if (info.value) {
+      event.preventDefault()
+      closeInfo()
+      return
+    }
+    clear()
+    return
+  }
+
+  if (info.value) return
 
   if (event.key.toLowerCase() === 'z' && !event.altKey && !event.shiftKey) {
     if (event.metaKey || event.ctrlKey) event.preventDefault()
@@ -42,7 +71,6 @@ function onKeydown(event) {
     event.preventDefault()
     document.getElementById('global-open')?.click()
   }
-  if (event.key === 'Escape') clear()
 }
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
@@ -81,7 +109,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
               />
             </svg>
           </button>
-          <h1>{{ route.meta.title || 'Audio tools' }}</h1>
+          <h1>{{ route.meta.heading || route.meta.label || 'Audio tools' }}</h1>
           <HubLinks />
         </header>
 
@@ -106,9 +134,17 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         <RouterView />
 
         <footer class="footer">
-          <RouterLink to="/help">How to Use</RouterLink>
-          <RouterLink to="/terms">Terms</RouterLink>
-          <RouterLink to="/privacy">Privacy</RouterLink>
+          <nav class="footer-links">
+            <button type="button" class="footer-link" @click="openInfo('docs')">
+              How to Use
+            </button>
+            <button type="button" class="footer-link" @click="openInfo('terms')">
+              Terms
+            </button>
+            <button type="button" class="footer-link" @click="openInfo('privacy')">
+              Privacy
+            </button>
+          </nav>
         </footer>
       </main>
 
@@ -135,5 +171,13 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         }"
       >
     </label>
+
+    <InfoModal
+      :open="Boolean(info)"
+      :title="info ? infoTitles[info] : ''"
+      @close="closeInfo"
+    >
+      <InfoContent v-if="info" :kind="info" />
+    </InfoModal>
   </div>
 </template>

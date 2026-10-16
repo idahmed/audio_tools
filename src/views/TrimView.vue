@@ -8,6 +8,7 @@ import ResultBar from '@/components/ResultBar.vue'
 import SeoBlurb from '@/components/SeoBlurb.vue'
 import Waveform from '@/components/Waveform.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { getTool } from '@/tools'
 import {
   downloadBlob,
   encodeMp3,
@@ -60,11 +61,9 @@ const seoPoints = [
   'Ideal for podcasts, voice notes, and short clips.',
 ]
 
-const seoFaq = [
-  { q: 'Can I cut multiple sections?', a: 'Currently one section per export. Use the tool multiple times for multiple cuts.' },
-  { q: 'What does normalize do?', a: 'Normalize adjusts volume so the loudest part reaches maximum level, making quiet audio louder.' },
-  { q: 'What format is the output?', a: 'Trimmed audio exports as MP3 at 192kbps for good quality and small size.' },
-]
+const seoFaq = getTool('trim')?.faq ?? []
+
+
 
 watch(source, (value) => {
   if (!value) {

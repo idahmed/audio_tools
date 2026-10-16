@@ -7,6 +7,7 @@ import QueueBar from '@/components/QueueBar.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import SeoBlurb from '@/components/SeoBlurb.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { getTool } from '@/tools'
 import {
   downloadBlob,
   encodeMp3,
@@ -51,6 +52,9 @@ const seoPoints = [
   'No upload required — processing stays on your device.',
   'Export the reversed track as MP3.',
 ]
+
+const seoFaq = getTool('reverse')?.faq ?? []
+
 
 watch(source, () => {
   clearTimeout(timer)
@@ -141,6 +145,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Reverse audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" title="Reverse audio online" :points="seoPoints" />
   </section>
 </template>

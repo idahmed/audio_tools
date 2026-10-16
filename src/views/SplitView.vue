@@ -14,6 +14,7 @@ import {
   splitBuffer,
 } from '@/lib/audio'
 import { downloadZip } from '@/lib/batch'
+import { getTool } from '@/tools'
 
 const {
   items,
@@ -63,6 +64,9 @@ const seoPoints = [
   'Download either part or both as a ZIP.',
   'Everything stays on your device.',
 ]
+
+const seoFaq = getTool('split')?.faq ?? []
+
 
 watch(source, (value) => {
   revokeParts()
@@ -209,6 +213,6 @@ async function downloadBoth() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Split audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" title="Split audio online" :points="seoPoints" />
   </section>
 </template>

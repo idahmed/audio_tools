@@ -6,6 +6,7 @@ import DropZone from '@/components/DropZone.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import SeoBlurb from '@/components/SeoBlurb.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { getTool } from '@/tools'
 import {
   downloadBlob,
   encodeMp3,
@@ -56,11 +57,9 @@ const seoPoints = [
   'Useful for voice notes, podcasts, and short edits.',
 ]
 
-const seoFaq = [
-  { q: 'How many files can I merge?', a: 'No limit. Add as many audio files as needed, though very large merges may be slower.' },
-  { q: 'Can I change the order of clips?', a: 'Yes, use the Up and Down buttons to reorder clips before merging.' },
-  { q: 'What if my files have different formats?', a: 'All files are decoded and merged, then exported as a single MP3 file.' },
-]
+const seoFaq = getTool('merge')?.faq ?? []
+
+
 
 watch(items, () => {
   clearTimeout(timer)

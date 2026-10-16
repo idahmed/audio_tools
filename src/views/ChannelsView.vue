@@ -7,6 +7,7 @@ import QueueBar from '@/components/QueueBar.vue'
 import ResultBar from '@/components/ResultBar.vue'
 import SeoBlurb from '@/components/SeoBlurb.vue'
 import { useAudioSource } from '@/composables/useAudioSource'
+import { getTool } from '@/tools'
 import {
   downloadBlob,
   encodeMp3,
@@ -53,6 +54,9 @@ const seoPoints = [
   'Useful before merging clips or uploading to apps with channel limits.',
   'Runs locally — nothing is uploaded.',
 ]
+
+const seoFaq = getTool('channels')?.faq ?? []
+
 
 watch([source, mode], () => {
   clearTimeout(timer)
@@ -163,6 +167,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Convert audio channels online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" title="Convert audio channels online" :points="seoPoints" />
   </section>
 </template>
