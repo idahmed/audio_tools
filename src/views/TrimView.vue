@@ -55,13 +55,12 @@ const resultMeta = computed(() => {
 
 const canExport = computed(() => !!source.value && end.value > start.value)
 
-const seoPoints = [
-  'Cut the part of a track you need and export it as MP3.',
-  'Optional normalize makes quiet recordings louder and even.',
-  'Ideal for podcasts, voice notes, and short clips.',
-]
-
-const seoFaq = getTool('trim')?.faq ?? []
+const tool = getTool('trim')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 
@@ -207,6 +206,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Trim audio online" :points="seoPoints" :faq="seoFaq" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

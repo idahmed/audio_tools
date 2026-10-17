@@ -51,13 +51,12 @@ const resultMeta = computed(() => {
   return `${formatBytes(resultSize.value)} · ${usedBitrate.value} kbps${note}`
 })
 
-const seoPoints = [
-  'Reduce audio file size with MP3 bitrate control.',
-  'Aim for a target size when forms or apps have upload limits.',
-  'Compression runs locally for privacy and speed.',
-]
-
-const seoFaq = getTool('compress')?.faq ?? []
+const tool = getTool('compress')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 
@@ -197,6 +196,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Compress audio online" :points="seoPoints" :faq="seoFaq" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

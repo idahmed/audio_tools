@@ -58,13 +58,12 @@ const livePreview = computed(
 )
 const count = computed(() => items.value.length)
 
-const seoPoints = [
-  'Convert audio to MP3, WAV, WebM, OGG, or M4A in your browser.',
-  'No upload required — files stay on your device.',
-  'WebM/OGG/M4A appear when your browser supports MediaRecorder for them.',
-]
-
-const seoFaq = getTool('convert')?.faq ?? []
+const tool = getTool('convert')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 
@@ -215,6 +214,6 @@ async function downloadAll() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Convert audio online" :points="seoPoints" :faq="seoFaq" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

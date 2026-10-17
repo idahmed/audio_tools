@@ -49,13 +49,12 @@ const resultMeta = computed(() => {
   return `${formatTime(resultDuration.value)} · ${formatBytes(resultSize.value)}`
 })
 
-const seoPoints = [
-  'Repeat a clip up to 12 times into one file.',
-  'Handy for samples, ringtones, and short loops.',
-  'Processing stays in your browser.',
-]
-
-const seoFaq = getTool('loop')?.faq ?? []
+const tool = getTool('loop')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 watch([source, times], () => {
@@ -166,6 +165,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb :faq="seoFaq" title="Loop audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

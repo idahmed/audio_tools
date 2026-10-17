@@ -49,13 +49,12 @@ const resultMeta = computed(() => {
   return `${formatTime(resultDuration.value)} · ${formatBytes(resultSize.value)}`
 })
 
-const seoPoints = [
-  'Change playback speed from half to double rate in your browser.',
-  'Pitch follows speed — a simple, lightweight approach.',
-  'Export the result as MP3 when it sounds right.',
-]
-
-const seoFaq = getTool('speed')?.faq ?? []
+const tool = getTool('speed')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 watch([source, rate], () => {
@@ -169,6 +168,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb :faq="seoFaq" title="Change audio speed online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

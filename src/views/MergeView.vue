@@ -51,13 +51,12 @@ const resultMeta = computed(() => {
   return `${formatTime(resultDuration.value)} · ${formatBytes(resultSize.value)}`
 })
 
-const seoPoints = [
-  'Join several clips into one file with simple concatenation.',
-  'Reorder tracks before merging — processing stays local.',
-  'Useful for voice notes, podcasts, and short edits.',
-]
-
-const seoFaq = getTool('merge')?.faq ?? []
+const tool = getTool('merge')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 
@@ -194,6 +193,6 @@ function removeAt(index) {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb title="Merge audio online" :points="seoPoints" :faq="seoFaq" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

@@ -50,13 +50,12 @@ const resultMeta = computed(() => {
   return formatBytes(resultSize.value)
 })
 
-const seoPoints = [
-  'Normalize quiet recordings or raise and lower volume locally.',
-  'Nothing is uploaded — processing stays in your browser.',
-  'Export as MP3 when the level sounds right.',
-]
-
-const seoFaq = getTool('volume')?.faq ?? []
+const tool = getTool('volume')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 watch([source, mode, percent], () => {
@@ -177,6 +176,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb :faq="seoFaq" title="Normalize audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

@@ -54,13 +54,12 @@ const resultMeta = computed(() => {
   return formatBytes(resultSize.value)
 })
 
-const seoPoints = [
-  'Add smooth fade in and fade out without uploading audio.',
-  'Useful for podcasts, voice notes, and short clips.',
-  'Export as MP3 when the fades sound right.',
-]
-
-const seoFaq = getTool('fade')?.faq ?? []
+const tool = getTool('fade')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 watch(source, () => {
@@ -168,6 +167,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb :faq="seoFaq" title="Fade audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

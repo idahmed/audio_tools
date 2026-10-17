@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAudioSource } from '@/composables/useAudioSource'
 import { useSeo } from '@/composables/useSeo'
 import { tools } from '@/tools'
+import PrivacyView from '@/views/PrivacyView.vue'
+import TermsView from '@/views/TermsView.vue'
 import ChannelsView from '@/views/ChannelsView.vue'
 import CompressView from '@/views/CompressView.vue'
 import ConvertView from '@/views/ConvertView.vue'
@@ -34,6 +36,28 @@ const views = {
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: PrivacyView,
+      meta: {
+        title: 'Privacy Policy — Audio tools | sessea',
+        description: 'Privacy policy for sessea audio tools. Edits stay in your browser. Ads may use partner cookies.',
+        heading: 'Privacy',
+        legal: true,
+      },
+    },
+    {
+      path: '/terms',
+      name: 'terms',
+      component: TermsView,
+      meta: {
+        title: 'Terms of Service — Audio tools | sessea',
+        description: 'Terms of Service for free browser audio tools on audio.sessea.com by sessea.',
+        heading: 'Terms',
+        legal: true,
+      },
+    },
     { path: '/', redirect: '/convert' },
     ...tools.map((tool) => ({
       path: tool.path,

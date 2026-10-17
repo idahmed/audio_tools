@@ -49,13 +49,12 @@ const resultMeta = computed(() => {
   return `${resultChannels.value} ch · ${formatBytes(resultSize.value)}`
 })
 
-const seoPoints = [
-  'Convert stereo to mono or duplicate mono into stereo.',
-  'Useful before merging clips or uploading to apps with channel limits.',
-  'Runs locally — nothing is uploaded.',
-]
-
-const seoFaq = getTool('channels')?.faq ?? []
+const tool = getTool('channels')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 watch([source, mode], () => {
@@ -167,6 +166,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb :faq="seoFaq" title="Convert audio channels online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

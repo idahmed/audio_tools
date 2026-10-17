@@ -59,13 +59,12 @@ const partBMeta = computed(() => {
   return `${formatTime(partBDur.value)} · ${formatBytes(partBSize.value)}`
 })
 
-const seoPoints = [
-  'Split one clip into two at a chosen point.',
-  'Download either part or both as a ZIP.',
-  'Everything stays on your device.',
-]
-
-const seoFaq = getTool('split')?.faq ?? []
+const tool = getTool('split')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 watch(source, (value) => {
@@ -213,6 +212,6 @@ async function downloadBoth() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb :faq="seoFaq" title="Split audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>

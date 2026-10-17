@@ -47,13 +47,12 @@ const resultMeta = computed(() => {
   return formatBytes(resultSize.value)
 })
 
-const seoPoints = [
-  'Reverse any audio clip instantly in your browser.',
-  'No upload required — processing stays on your device.',
-  'Export the reversed track as MP3.',
-]
-
-const seoFaq = getTool('reverse')?.faq ?? []
+const tool = getTool('reverse')
+const seoPoints = tool?.points ?? []
+const seoFaq = tool?.faq ?? []
+const seoLede = tool?.lede ?? ''
+const seoSteps = tool?.steps ?? []
+const seoNote = tool?.note ?? ''
 
 
 watch(source, () => {
@@ -145,6 +144,6 @@ async function download() {
     </div>
 
     <p v-if="error" class="error">{{ error }}</p>
-    <SeoBlurb :faq="seoFaq" title="Reverse audio online" :points="seoPoints" />
+    <SeoBlurb :faq="seoFaq" :title="tool?.heading || tool?.title || 'Tool'" :lede="seoLede" :points="seoPoints" :steps="seoSteps" :note="seoNote" />
   </section>
 </template>
